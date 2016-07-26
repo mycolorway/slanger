@@ -19,6 +19,7 @@ module Slanger
       @handshake     = handshake
       @connection    = Connection.new(@socket)
       @subscriptions = {}
+      @channel_name  = nil
       authenticate
     end
 
@@ -45,7 +46,7 @@ module Slanger
     end
 
     def onclose
-
+      unregister_channel
       subscriptions = @subscriptions.select { |k,v| k && v }
       
       subscriptions.each_key do |channel_id|
@@ -72,6 +73,7 @@ module Slanger
     end
 
     def pusher_ping(msg)
+      register_channel
       send_payload nil, 'pusher:pong'
     end
 
@@ -80,6 +82,9 @@ module Slanger
     def pusher_subscribe(msg)
       channel_id = msg['data']['channel']
       klass      = subscription_klass channel_id
+
+      @channel_name ||= "ac_#{channel_id}"
+      register_channel
 
       if @subscriptions[channel_id]
         error({ code: nil, message: "Existing subscription to #{channel_id}" })
@@ -96,6 +101,17 @@ module Slanger
     end
 
     private
+
+    def register_channel
+      if @channel_name
+        Slanger::Redis.hset(@channel_name, "ttl", "3600")
+        Slanger::Redis.expire(@channel_name, 3600)
+      end
+    end
+
+    def unregister_channel
+      Slanger::Redis.expire(@channel_name, 0) if @channel_name
+    end
 
     def app_key
       @handshake.path.split(/\W/)[2]

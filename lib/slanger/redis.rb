@@ -10,7 +10,7 @@ module Slanger
 
     def_delegator  :publisher, :publish
     def_delegators :subscriber, :subscribe
-    def_delegators :regular_connection, :hgetall, :hdel, :hset, :hincrby
+    def_delegators :regular_connection, :hgetall, :hdel, :hset, :hincrby, :expire
 
     private
 
