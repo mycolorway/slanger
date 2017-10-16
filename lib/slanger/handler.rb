@@ -48,7 +48,7 @@ module Slanger
     def onclose
       unregister_channel
       subscriptions = @subscriptions.select { |k,v| k && v }
-      
+
       subscriptions.each_key do |channel_id|
         subscription_id = subscriptions[channel_id]
         Channel.unsubscribe channel_id, subscription_id
@@ -104,8 +104,9 @@ module Slanger
 
     def register_channel
       if @channel_name
-        Slanger::Redis.hset(@channel_name, "ttl", "3600")
-        Slanger::Redis.expire(@channel_name, 3600)
+        # 600 is inspired by MacOS default timeout
+        Slanger::Redis.hset(@channel_name, 'ttl', '600')
+        Slanger::Redis.expire(@channel_name, 600)
       end
     end
 
