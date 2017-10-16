@@ -104,7 +104,7 @@ module Slanger
 
     def register_channel
       if @channel_name
-        # 600 is inspired by MacOS default timeout
+        # 600 is inspired by macOS default screen timeout
         Slanger::Redis.hset(@channel_name, 'ttl', '600')
         Slanger::Redis.expire(@channel_name, 600)
       end
