@@ -1,3 +1,8 @@
+# HOWTO:
+#   1. git clone on server
+#   2. docker build -t some_registry/slanger:latest .
+#   3. docker push some_registry/slanger:latest
+
 # NOTE: failed to build native extensions for json 1.8 on ruby 2.4.4
 FROM ruby:2.3.7
 
